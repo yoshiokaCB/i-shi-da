@@ -1,31 +1,29 @@
 class DataController
-  attr_accessor :name, :score, :ranking, :send_data, :recv_data
-  def create_data
-    @send_data = case @recv_data["scene"]
-                   when "name"
-                     @name = @recv_data["name"].chomp
-                     {scene: "start"}
-                   when "start"
-                     @score = 0
-                     @question = create_question
-                     {scene: "question", question_no: 1, question: @question[0]}
-                   when "question"
+  def create_data(recv)
+    case recv["scene"]
+    when "name"
+      @name = recv["name"].chomp
+      return {scene: "start"}
+    when "start"
+      @score = 0
+      @question = create_question
+      return {scene: "question", question_no: 1, question: @question[0]}
+    when "question"
+      #正解判定
+      answer_check recv
 
-                     #正解判定
-                     answer_check self.recv_data
+      #次の問題のナンバー
+      q_no = recv["question_no"].to_i
+      q_no += 1
 
-                     #次の問題のナンバー
-                     q_no = recv_data["question_no"].to_i
-                     q_no += 1
+      #最終問題のときは"result"を返す
+      scene =  q_no == @question.size ? "result" : "question"
 
-                     #最終問題のときは"result"を返す
-                     scene =  q_no == @question.size ? "result" : "question"
-
-                     {scene: scene, question_no: q_no, question: @question[q_no-1]}
-                   when "result"
-                     @ranking = read_ranking
-                     {name: @name, score: @score, ranking: @ranking }
-                 end
+      return {scene: scene, question_no: q_no, question: @question[q_no-1]}
+    when "result"
+      @ranking = read_ranking
+      return {name: @name, score: @score, ranking: @ranking }
+    end
   end
 
   private

@@ -11,9 +11,7 @@ loop do
   Thread.new(server.accept) do |client|
     data = DataController.new
     while s = client.gets
-      data.recv_data = JSON.parse(s)
-      data.create_data
-      client.puts data.send_data.to_json
+      client.puts data.create_data(JSON.parse(s)).to_json
     end
   end
 end
