@@ -1,10 +1,9 @@
 require 'bundler'
 Bundler.require
-
 require 'socket'
 require 'json'
 require './lib/server/data_controller'
-
+include Server
 
 server = TCPServer.open(8888)
 loop do
