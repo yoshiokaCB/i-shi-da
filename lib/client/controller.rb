@@ -1,8 +1,6 @@
 module Client
   class Controller
-    def initialized_data
-      return {'name' => '', 'scene' => 'name', 'question_no' => '', 'answer' => ''}
-    end
+    INITIALIZED_DATA = {'name' => '', 'scene' => 'name', 'question_no' => '', 'answer' => ''}
 
     def scene_judge(data, line)
       case data["scene"]

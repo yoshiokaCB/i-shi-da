@@ -5,19 +5,19 @@ require 'json'
 require './lib/client/controller'
 
 
-@socket = TCPSocket.open('localhost', 8888)
-client = Client::Controller.new
+socket = TCPSocket.open('localhost', 8888)
+controller = Client::Controller.new
 
-recv_data = client.initialized_data
+recv_data = Client::Controller::INITIALIZED_DATA
 
 STDIN.each_line do |line|
 
-  send_data = client.scene_judge(recv_data, line)
+  send_data = controller.scene_judge(recv_data, line)
   p "send_data : " + send_data.to_s
 
-  @socket.puts send_data.to_json
+  socket.puts send_data.to_json
 
-  recv_data = JSON.parse(@socket.gets)
+  recv_data = JSON.parse(socket.gets)
   p "recv_data : " + recv_data.to_s
 
 end
