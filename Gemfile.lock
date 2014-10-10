@@ -9,6 +9,7 @@ GEM
     columnize (0.8.9)
     debugger-linecache (1.2.0)
     method_source (0.8.2)
+    os (0.9.6)
     pry (0.10.1)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
@@ -29,4 +30,5 @@ PLATFORMS
   x86-mingw32
 
 DEPENDENCIES
+  os
   pry-byebug

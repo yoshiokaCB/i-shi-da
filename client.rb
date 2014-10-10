@@ -10,6 +10,7 @@ controller = Client::Controller.new
 
 recv_data = Client::Controller::INITIALIZED_DATA
 
+controller.clear_console
 STDIN.each_line do |line|
 
   send_data = controller.scene_judge(recv_data, line)
