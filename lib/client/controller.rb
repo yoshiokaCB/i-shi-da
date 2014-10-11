@@ -28,6 +28,8 @@ module Client
         clear_console
 
         return {scene: "result", answer: line, question_no: 10, time: (@end_time - @start_time).truncate}
+      when "retry"
+        return {scene: "retry", select: line}
       end
     end
   end

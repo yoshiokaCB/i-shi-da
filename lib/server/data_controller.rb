@@ -4,7 +4,7 @@ module Server
     def create_data(recv)
       case recv["scene"]
         when "name"
-          @name = recv["name"].chomp
+          @name ||= recv["name"].chomp
           return {scene: "start"}
         when "start"
           @score = 0
@@ -27,7 +27,17 @@ module Server
           answer_check recv
 
           @ranking = read_ranking
-          return {name: @name, score: @score, ranking: @ranking }
+          return {scene: "retry", name: @name, score: @score, ranking: @ranking }
+        when "retry"
+          case recv["select"].chomp
+            when "y"
+              recv["scene"] = "name"
+              create_data(recv)
+            when "n"
+              return {scene: "end"}
+            else
+              return {scene: "retry"}
+          end
       end
     end
 
