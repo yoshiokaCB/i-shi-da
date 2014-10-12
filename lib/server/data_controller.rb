@@ -4,7 +4,7 @@ module Server
     def create_data(recv)
       case recv["scene"]
         when "name"
-          @name ||= recv["name"].chomp
+          @name = recv["name"].chomp
           return {scene: "start"}
         when "start"
           @score = 0
@@ -31,8 +31,7 @@ module Server
         when "retry"
           case recv["select"].chomp
             when "y"
-              recv["scene"] = "name"
-              create_data(recv)
+              return {scene: "start"}
             when "n"
               return {scene: "end"}
             else
