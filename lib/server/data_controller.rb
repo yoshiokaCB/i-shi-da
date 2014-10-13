@@ -1,5 +1,6 @@
 module Server
   class DataController
+    STD_TIME_POINT = 1
     TIME_SCORE_POINT = 1
     RATE_SCORE_POINT = 10
 
@@ -12,7 +13,7 @@ module Server
           @score = 0
           @rate = 0
           @question = create_question
-          @standard_time = standard_time_calculate
+          @std_time = standard_time_calculate
           return {scene: "question", question_no: 1, question: @question[0]}
         when "question"
           #正解判定
@@ -66,7 +67,7 @@ module Server
     end
 
     def standard_time_calculate
-      return @question.join.size
+      return (@question.join.size) * STD_TIME_POINT
     end
 
     def answer_check recv_data
@@ -75,7 +76,7 @@ module Server
     end
 
     def score_calculate recv
-      time_score = (@standard_time - recv[:time].to_i) * TIME_SCORE_POINT
+      time_score = (@std_time - recv[:time].to_i) * TIME_SCORE_POINT
       rate_score = @rate * RATE_SCORE_POINT
       @score = time_score + rate_score
     end
