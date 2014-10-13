@@ -1,5 +1,7 @@
 module Server
   class DataController
+    TIME_SCORE_POINT = 1
+    RATE_SCORE_POINT = 10
 
     def create_data(recv)
       case recv["scene"]
@@ -8,7 +10,9 @@ module Server
           return {scene: "start"}
         when "start"
           @score = 0
+          @rate = 0
           @question = create_question
+          @standard_time = standard_time_calculate
           return {scene: "question", question_no: 1, question: @question[0]}
         when "question"
           #正解判定
@@ -23,11 +27,15 @@ module Server
 
           return {scene: scene, question_no: q_no, question: @question[q_no-1]}
         when "result"
-          #正解判定
+          #正解判定 rate
           answer_check recv
 
+          #スコア計算
+          score_calculate recv
+
           @ranking = read_ranking
-          return {scene: "retry", name: @name, score: @score, ranking: @ranking }
+          return {scene: "retry", name: @name, score: @score, rate: @rate, ranking: @ranking }
+
         when "retry"
           case recv["select"].chomp
             when "y"
@@ -57,9 +65,19 @@ module Server
       ]
     end
 
+    def standard_time_calculate
+      return @question.join.size
+    end
+
     def answer_check recv_data
       q_no = recv_data["question_no"].to_i
-      @score += 1 if recv_data["answer"].chomp == @question[q_no-1]
+      @rate += 1 if recv_data["answer"].chomp == @question[q_no-1]
+    end
+
+    def score_calculate recv
+      time_score = (@standard_time - recv[:time].to_i) * TIME_SCORE_POINT
+      rate_score = @rate * RATE_SCORE_POINT
+      @score = time_score + rate_score
     end
 
     def read_ranking
