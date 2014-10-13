@@ -13,7 +13,6 @@ module Server
           @score = 0
           @rate = 0
           @question = create_question
-          @std_time = standard_time_calculate
           return {scene: "question", question_no: 1, question: @question[0]}
         when "question"
           #正解判定
@@ -66,17 +65,14 @@ module Server
       ]
     end
 
-    def standard_time_calculate
-      return (@question.join.size) * STD_TIME_POINT
-    end
-
     def answer_check recv_data
       q_no = recv_data["question_no"].to_i
       @rate += 1 if recv_data["answer"].chomp == @question[q_no-1]
     end
 
     def score_calculate recv
-      time_score = (@std_time - recv[:time].to_i) * TIME_SCORE_POINT
+      std_time = (@question.join.size) * STD_TIME_POINT
+      time_score = (std_time - recv[:time].to_i) * TIME_SCORE_POINT
       rate_score = @rate * RATE_SCORE_POINT
       @score = time_score + rate_score
     end
