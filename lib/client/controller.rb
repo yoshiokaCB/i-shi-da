@@ -34,29 +34,41 @@ module Client
     end
 
     def display_message(data)
-      if data['scene'] == 'name'
-        puts "=================="
-        puts "     タイトル     "
-        puts "=================="
-        puts "～説明～"
-        puts
-        puts "[名前を入力してください]"
-      elsif data['scene'] == 'start'
-        puts
-        puts "[スペースを送信でスタート]"
-      elsif data['scene'] == 'question' || data['scene'] == 'result'
-        puts
-        puts "[問#{data['question_no']}]"
-        puts data['question']
-        puts
-        puts "[入力]"
-      elsif data['scene'] == 'retry'
-        puts "[結果]"
-        puts
-        puts "リトライしますか？(y/n)"
-      elsif data['scene'] == 'end'
-        puts
-        puts '終了します'
+      case data['scene']
+      when 'name'
+        puts <<-EOS.unindent
+          ==================
+              タイトル
+          ==================
+          ～説明～
+
+          [名前を入力してください]
+        EOS
+      when 'start'
+        puts <<-EOS.unindent
+
+          [スペースを送信でスタート]
+        EOS
+      when 'question', 'result'
+        puts <<-EOS.unindent
+
+          [問#{data['question_no']}]
+          #{data['question']}
+          
+          [入力]
+        EOS
+      when 'retry'
+        puts <<-EOS.unindent
+          [結果]
+
+          リトライしますか？(y/n)
+        EOS
+      when 'end'
+        puts <<-EOS.unindent
+
+          終了します
+        EOS
+
         exit
       end
     end
