@@ -32,5 +32,45 @@ module Client
         return {scene: "retry", select: line}
       end
     end
+
+    def display_message(data)
+      case data['scene']
+      when 'name'
+        puts <<-EOS.unindent
+          ==================
+              タイトル
+          ==================
+          ～説明～
+
+          [名前を入力してください]
+        EOS
+      when 'start'
+        puts <<-EOS.unindent
+
+          [スペースを送信でスタート]
+        EOS
+      when 'question', 'result'
+        puts <<-EOS.unindent
+
+          [問#{data['question_no']}]
+          #{data['question']}
+          
+          [入力]
+        EOS
+      when 'retry'
+        puts <<-EOS.unindent
+          [結果]
+
+          リトライしますか？(y/n)
+        EOS
+      when 'end'
+        puts <<-EOS.unindent
+
+          終了します
+        EOS
+
+        exit
+      end
+    end
   end
 end
