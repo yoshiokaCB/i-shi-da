@@ -1,20 +1,14 @@
+require './lib/server/ranking'
+
 module Server
   class DataController
     STD_TIME_POINT = 1
     TIME_SCORE_POINT = 1
     RATE_SCORE_POINT = 10
-    RANK_FILE_PATH = './lib/server/ranking.json'
-    RANK_COUNT = 5
 
     def initialize
-      unless File.exist?(RANK_FILE_PATH)
-        @ranking = {}
-        sample = { "name" => "---", "score" => 0, "ratio" => 0, "time" => "0", "date" => "0000-00-00" }
-        RANK_COUNT.times { |i| @ranking[(i+1).to_s] = sample }
-        create_ranking_file
-      else
-        @ranking = File.open(RANK_FILE_PATH) { |json| JSON.load(json) }
-      end
+      @ranking = Server::Ranking.new
+      @mutex = Mutex.new
     end
 
     def create_data(recv)
@@ -56,18 +50,14 @@ module Server
           }
 
           #ランキング編集
-          rank_ary = @ranking.values
-          rank_ary.push user_result
-          rank_ary.sort! do |a, b|
-            b["score"] != a["score"] ? b["score"] <=> a["score"] : b["ratio"] <=> a["ratio"]
+          begin
+            @mutex.lock
+            ranking_list = @ranking.ranking_edit user_result
+          ensure
+            @mutex.unlock
           end
 
-          @ranking = {}
-          RANK_COUNT.times { |i| @ranking[(i+1).to_s] = rank_ary[i] }
-          create_ranking_file
-
-          return user_result.merge({"scene" => "retry", "ranking" => @ranking})
-
+          return user_result.merge({"scene" => "retry", "ranking" => ranking_list})
         when "retry"
           case recv["select"].chomp
             when "y"
