@@ -58,11 +58,20 @@ module Client
           [入力]
         EOS
       when 'retry'
-        puts <<-EOS.unindent
-          [結果]
+        unless data == {'scene'=>'retry'}
+          puts <<-EOS.unindent
+            [結果]
+            正解率：　#{data['ratio']}
+            時　間：　#{data['time']}　秒
+            得　点：　#{data['score']}
 
-          リトライしますか？(y/n)
-        EOS
+            [ランキング]
+          EOS
+
+          ranking(data['ranking'])
+        end
+
+        puts 'リトライしますか？(y/n)'
       when 'end'
         puts <<-EOS.unindent
 
@@ -71,6 +80,18 @@ module Client
 
         exit
       end
+    end
+
+    private
+
+    def ranking(data)
+      ranking_datas = []
+
+      data.each_pair do |rank, ranking_data|
+        ranking_datas << ranking_data.merge('rank'=>rank)
+      end
+
+      Formatador.display_compact_table(ranking_datas, ['rank', 'name', 'score', 'ratio', 'time', 'date'])
     end
   end
 end
