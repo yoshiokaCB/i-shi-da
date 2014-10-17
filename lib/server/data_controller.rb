@@ -5,6 +5,7 @@ module Server
     STD_TIME_POINT = 1
     TIME_SCORE_POINT = 1
     RATE_SCORE_POINT = 10
+    QUESTION_NUM = 10
 
     def initialize
       @ranking = Server::Ranking.new
@@ -67,18 +68,16 @@ module Server
     private
 
     def create_question
-      return [
-          "hoge",
-          "foo",
-          "baz",
-          "bazz",
-          "hogehoge",
-          "hoge2",
-          "foo2",
-          "baz2",
-          "bazz2",
-          "hogehoge2"
-      ]
+      methods  = String.instance_methods
+      methods += Array.instance_methods
+      methods += Hash.instance_methods
+      methods.uniq!
+      methods.reject! do |ary|
+        ary.to_s =~ /[=+*%<>&\-\|\[]|!~|^!/
+      end
+      methods.collect! { |m| m.to_s }
+
+      return methods.sample(QUESTION_NUM)
     end
 
     def answer_check recv_data
