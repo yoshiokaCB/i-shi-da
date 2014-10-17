@@ -4,32 +4,38 @@ module Server
     RANK_COUNT = 5
 
     def initialize
+      @mutex = Mutex.new
       unless File.exist?(RANK_FILE_PATH)
         ranking = {}
         sample = { "name" => "---", "score" => 0, "ratio" => 0, "time" => "0", "date" => "0000-00-00" }
         RANK_COUNT.times { |i| ranking[(i+1).to_s] = sample }
-        ranking_save ranking
+        save ranking
       end
     end
 
-    def ranking_edit user_result
-      rank_ary = ranking_load.values
-      rank_ary.push user_result
-      rank_ary.sort! do |a, b|
-        b["score"] != a["score"] ? b["score"] <=> a["score"] : b["ratio"] <=> a["ratio"]
+    def edit user_result
+      begin
+        @mutex.lock
+        rank_ary = load.values
+        rank_ary.push user_result
+        rank_ary.sort! do |a, b|
+          b["score"] != a["score"] ? b["score"] <=> a["score"] : b["ratio"] <=> a["ratio"]
+        end
+        ranking = {}
+        RANK_COUNT.times { |i| ranking[(i+1).to_s] = rank_ary[i] }
+        save ranking
+      ensure
+        @mutex.unlock
       end
-      ranking = {}
-      RANK_COUNT.times { |i| ranking[(i+1).to_s] = rank_ary[i] }
-      ranking_save ranking
 
       return ranking
     end
 
-    def ranking_load
+    def load
       return File.open(RANK_FILE_PATH) { |json| JSON.load(json) }
     end
 
-    def ranking_save ranking
+    def save ranking
       File.open(RANK_FILE_PATH, "w") { |f| f.write(ranking.to_json) }
     end
 

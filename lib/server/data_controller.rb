@@ -8,7 +8,6 @@ module Server
 
     def initialize
       @ranking = Server::Ranking.new
-      @mutex = Mutex.new
     end
 
     def create_data(recv)
@@ -50,12 +49,7 @@ module Server
           }
 
           #ランキング編集
-          begin
-            @mutex.lock
-            ranking_list = @ranking.ranking_edit user_result
-          ensure
-            @mutex.unlock
-          end
+          ranking_list = @ranking.edit user_result
 
           return user_result.merge({"scene" => "retry", "ranking" => ranking_list})
         when "retry"
@@ -97,10 +91,6 @@ module Server
       time_score = (std_time - recv["time"].to_i) * TIME_SCORE_POINT
       ratio_score = @ratio * RATE_SCORE_POINT
       @score = time_score + ratio_score
-    end
-
-    def create_ranking_file
-      File.open(RANK_FILE_PATH, "w") { |f| f.write(@ranking.to_json) }
     end
 
   end
