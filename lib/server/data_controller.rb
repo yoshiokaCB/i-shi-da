@@ -61,7 +61,7 @@ module Server
       end
       methods.collect! { |m| m.to_s }
 
-      return methods.shuffle!.slice(0, QUESTION_NUM)
+      return methods.sample(QUESTION_NUM)
     end
 
     def answer_check recv_data
