@@ -1,8 +1,14 @@
+require './lib/server/ranking'
+
 module Server
   class DataController
     STD_TIME_POINT = 1
     TIME_SCORE_POINT = 1
     RATE_SCORE_POINT = 10
+
+    def initialize
+      @ranking = Server::Ranking.new
+    end
 
     def create_data(recv)
       case recv["scene"]
@@ -11,7 +17,7 @@ module Server
           return {scene: "start"}
         when "start"
           @score = 0
-          @rate = 0
+          @ratio = 0
           @question = create_question
           return {scene: "question", question_no: 1, question: @question[0]}
         when "question"
@@ -33,9 +39,19 @@ module Server
           #スコア計算
           score_calculate recv
 
-          @ranking = read_ranking
-          return {scene: "retry", name: @name, score: @score, rate: @rate, ranking: @ranking }
+          #ユーザーの結果
+          user_result = {
+              "name" => @name,
+              "score" => @score,
+              "ratio" => @ratio,
+              "time" => recv["time"],
+              "date" => Time.now.strftime("%Y-%m-%d %H:%M")
+          }
 
+          #ランキング編集
+          ranking_list = @ranking.edit user_result
+
+          return user_result.merge({"scene" => "retry", "ranking" => ranking_list})
         when "retry"
           case recv["select"].chomp
             when "y"
@@ -67,24 +83,14 @@ module Server
 
     def answer_check recv_data
       q_no = recv_data["question_no"].to_i
-      @rate += 1 if recv_data["answer"].chomp == @question[q_no-1]
+      @ratio += 1 if recv_data["answer"].chomp == @question[q_no-1]
     end
 
     def score_calculate recv
       std_time = (@question.join.size) * STD_TIME_POINT
-      time_score = (std_time - recv[:time].to_i) * TIME_SCORE_POINT
-      rate_score = @rate * RATE_SCORE_POINT
-      @score = time_score + rate_score
-    end
-
-    def read_ranking
-      return {
-          "1" => { name: "hoge", score: 190, ratio: 9, time: "1234", date: "2014-10-18" },
-          "2" => { name: "foo", score: 160, ratio: 9, time: "1234", date: "2014-10-18" },
-          "3" => { name: "bar", score: 150, ratio: 9, time: "1234", date: "2014-10-18" },
-          "4" => { name: "bazz", score: 130, ratio: 9, time: "1234", date: "2014-10-18" },
-          "5" => { name: "fuze", score: 110, ratio: 9, time: "1234", date: "2014-10-18" }
-      }
+      time_score = (std_time - recv["time"].to_i) * TIME_SCORE_POINT
+      ratio_score = @ratio * RATE_SCORE_POINT
+      @score = time_score + ratio_score
     end
 
   end
