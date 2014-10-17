@@ -44,7 +44,7 @@ module Server
           user_result = {
               "name" => @name,
               "score" => @score,
-              "ratio" => @ratio,
+              "ratio" => @ratio.to_s + "/" + QUESTION_NUM.to_s,
               "time" => recv["time"],
               "date" => Time.now.strftime("%Y-%m-%d %H:%M")
           }

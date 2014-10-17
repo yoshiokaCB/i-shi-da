@@ -7,7 +7,7 @@ module Server
       @mutex = Mutex.new
       unless File.exist?(RANK_FILE_PATH)
         ranking = {}
-        sample = { "name" => "---", "score" => 0, "ratio" => 0, "time" => "0", "date" => "0000-00-00" }
+        sample = { "name" => "---", "score" => 0, "ratio" => "0/0", "time" => "0", "date" => "0000-00-00" }
         RANK_COUNT.times { |i| ranking[(i+1).to_s] = sample }
         save ranking
       end
