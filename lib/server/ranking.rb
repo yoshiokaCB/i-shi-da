@@ -6,18 +6,17 @@ module Server
     def initialize
       @mutex = Mutex.new
       unless File.exist?(RANK_FILE_PATH)
-        ranking = {}
+        ranking = []
         sample = { "name" => "---", "score" => 0, "ratio" => "0/0", "time" => "0", "date" => "0000-00-00" }
-        RANK_COUNT.times { |i| ranking[(i+1).to_s] = sample }
+        RANK_COUNT.times { ranking.push(sample) }
         save(ranking)
       end
     end
 
     def edit(user_result)
-      binding.pry
       begin
         @mutex.lock
-        rank_ary = load.values
+        rank_ary = load
         rank_ary.push user_result
         rank_ary.sort! do |a, b|
           b["score"] != a["score"] ? b["score"] <=> a["score"] : b["ratio"] <=> a["ratio"]
