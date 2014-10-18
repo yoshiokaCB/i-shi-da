@@ -38,6 +38,9 @@ module Client
 
       if data['scene'] == 'retry' && data != {"scene" => "retry"}
         ranking(data['ranking'])
+        puts 'リトライしますか？(y/n)'
+      elsif data['scene'] == 'end'
+        exit
       end
     end
 
@@ -88,8 +91,6 @@ module Client
 
             [ランキング]
           EOS
-
-          # ranking(data['ranking'])
         end
 
         return 'リトライしますか？(y/n)'
