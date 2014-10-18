@@ -9,6 +9,7 @@ module Server
         ranking = []
         sample = { "name" => "---", "score" => 0, "ratio" => "0/0", "time" => "0", "date" => "0000-00-00" }
         RANK_COUNT.times { ranking.push(sample) }
+        binding.pry
         save(ranking)
       end
     end
