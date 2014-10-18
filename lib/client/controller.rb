@@ -19,7 +19,7 @@ module Client
 
         @start_time = Time.now
 
-        return {scene: "start" }
+        return {scene: "start", select: line }
       when "question"
         return {scene: "question", answer: line, question_no: data["question_no"]}
       when "result"

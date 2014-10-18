@@ -20,9 +20,11 @@ module Server
           @score = 0
           @ratio = 0
           @question = create_question
-          return {scene: "question", question_no: 1, question: @question[0]}
-        when "ranking"
-          return {scene: "start", ranking: @ranking.load}
+          if recv["select"].chomp == "0"
+            return {scene: "start", ranking: @ranking.load}
+          else
+            return {scene: "question", question_no: 1, question: @question[0]}
+          end
         when "question"
           #正解判定
           answer_check(recv)

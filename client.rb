@@ -22,7 +22,7 @@ STDIN.each_line do |line|
   socket.puts send_data.to_json
 
   recv_data = JSON.parse(socket.gets)
-  # p "recv_data : " + recv_data.to_s
+  p "recv_data : " + recv_data.to_s
 
   controller.display_message(recv_data)
 end
