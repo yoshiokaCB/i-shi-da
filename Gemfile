@@ -6,3 +6,5 @@ gem "os"
 gem "unindent"
 
 gem "formatador"
+
+gem "rspec"
