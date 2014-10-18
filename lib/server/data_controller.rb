@@ -21,6 +21,8 @@ module Server
           @ratio = 0
           @question = create_question
           return {scene: "question", question_no: 1, question: @question[0]}
+        when "ranking"
+          return {scene: "start", ranking: @ranking.load}
         when "question"
           #正解判定
           answer_check(recv)
