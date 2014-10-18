@@ -38,7 +38,7 @@ module Client
       when 'name'
         puts <<-EOS.unindent
           ==================
-              タイトル
+              
           ==================
           ～説明～
 
@@ -85,12 +85,7 @@ module Client
     private
 
     def ranking(data)
-      ranking_datas = []
-
-      data.each_pair do |rank, ranking_data|
-        ranking_datas << ranking_data.merge('rank'=>rank)
-      end
-
+      ranking_datas = data.map{|rank, h| h.merge('rank' => rank)}
       Formatador.display_compact_table(ranking_datas, ['rank', 'name', 'score', 'ratio', 'time', 'date'])
     end
   end
