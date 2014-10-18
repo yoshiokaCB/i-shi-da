@@ -14,9 +14,11 @@ module Server
     end
 
     def edit(user_result)
+      binding.pry
       begin
         @mutex.lock
-        rank_ary = load.push(user_result)
+        rank_ary = load.values
+        rank_ary.push user_result
         rank_ary.sort! do |a, b|
           b["score"] != a["score"] ? b["score"] <=> a["score"] : b["ratio"] <=> a["ratio"]
         end
