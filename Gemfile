@@ -4,3 +4,5 @@ gem "pry-byebug"
 gem "os"
 
 gem "unindent"
+
+gem "formatador"
