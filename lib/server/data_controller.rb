@@ -23,7 +23,7 @@ module Server
           return {scene: "question", question_no: 1, question: @question[0]}
         when "question"
           #正解判定
-          answer_check recv
+          answer_check(recv)
 
           #次の問題のナンバー
           q_no = recv["question_no"].to_i
@@ -35,10 +35,10 @@ module Server
           return {scene: scene, question_no: q_no, question: @question[q_no-1]}
         when "result"
           #正解判定 rate
-          answer_check recv
+          answer_check(recv)
 
           #スコア計算
-          score_calculate recv
+          score_calculate(recv)
 
           #ユーザーの結果
           user_result = {
@@ -50,7 +50,7 @@ module Server
           }
 
           #ランキング編集
-          ranking_list = @ranking.edit user_result
+          ranking_list = @ranking.edit(user_result)
 
           return user_result.merge({"scene" => "retry", "ranking" => ranking_list})
         when "retry"
@@ -80,12 +80,12 @@ module Server
       return methods.sample(QUESTION_NUM)
     end
 
-    def answer_check recv_data
+    def answer_check(recv_data)
       q_no = recv_data["question_no"].to_i
       @ratio += 1 if recv_data["answer"].chomp == @question[q_no-1]
     end
 
-    def score_calculate recv
+    def score_calculate(recv)
       std_time = (@question.join.size) * STD_TIME_POINT
       time_score = (std_time - recv["time"].to_i) * TIME_SCORE_POINT
       ratio_score = @ratio * RATE_SCORE_POINT

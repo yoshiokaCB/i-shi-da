@@ -9,24 +9,23 @@ module Server
         ranking = {}
         sample = { "name" => "---", "score" => 0, "ratio" => "0/0", "time" => "0", "date" => "0000-00-00" }
         RANK_COUNT.times { |i| ranking[(i+1).to_s] = sample }
-        save ranking
+        save(ranking)
       end
     end
 
     def edit(user_result)
       begin
         @mutex.lock
-        rank_ary = load.values
-        rank_ary.push user_result
+        rank_ary = load.push(user_result)
         rank_ary.sort! do |a, b|
           b["score"] != a["score"] ? b["score"] <=> a["score"] : b["ratio"] <=> a["ratio"]
         end
         ranking = []
         RANK_COUNT.times do |i|
           rank_ary[i][:rank] = (i+1)
-          ranking.push rank_ary[i]
+          ranking.push(rank_ary[i])
         end
-        save ranking
+        save(ranking)
       ensure
         @mutex.unlock
       end
