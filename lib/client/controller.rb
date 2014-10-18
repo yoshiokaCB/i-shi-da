@@ -34,9 +34,17 @@ module Client
     end
 
     def display_message(data)
+      puts message(data)
+
+      if data['scene'] == 'retry' && data != {"scene" => "retry"}
+        ranking(data['ranking'])
+      end
+    end
+
+    def message(data)
       case data['scene']
       when 'name'
-        puts <<-EOS.unindent
+        return <<-EOS.unindent
           =====================================
                        I・SHI・DA
           =====================================
@@ -56,14 +64,14 @@ module Client
       when 'start'
         ranking(data['ranking']) if data['ranking']
 
-        puts <<-EOS.unindent
+        return <<-EOS.unindent
 
           番号を入力してエンターを押してください
           [0] -> ランキング表示
           [1] -> ゲームスタート
         EOS
       when 'question', 'result'
-        puts <<-EOS.unindent
+        return <<-EOS.unindent
 
           [問#{data['question_no']}]
           #{data['question']}
@@ -72,7 +80,7 @@ module Client
         EOS
       when 'retry'
         unless data == {'scene'=>'retry'}
-          puts <<-EOS.unindent
+          return <<-EOS.unindent
             [結果]
             正解率：　#{data['ratio']}
             時　間：　#{data['time']}　秒
@@ -81,12 +89,12 @@ module Client
             [ランキング]
           EOS
 
-          ranking(data['ranking'])
+          # ranking(data['ranking'])
         end
 
-        puts 'リトライしますか？(y/n)'
+        return 'リトライしますか？(y/n)'
       when 'end'
-        puts <<-EOS.unindent
+        return <<-EOS.unindent
 
           終了します
         EOS
