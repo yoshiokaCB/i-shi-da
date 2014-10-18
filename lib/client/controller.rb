@@ -85,8 +85,7 @@ module Client
     private
 
     def ranking(data)
-      ranking_datas = data.map{|rank, h| h.merge('rank' => rank)}
-      Formatador.display_compact_table(ranking_datas, ['rank', 'name', 'score', 'ratio', 'time', 'date'])
+      Formatador.display_compact_table(data, ['rank', 'name', 'score', 'ratio', 'time', 'date'])
     end
   end
 end

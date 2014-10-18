@@ -13,7 +13,7 @@ module Server
       end
     end
 
-    def edit user_result
+    def edit(user_result)
       begin
         @mutex.lock
         rank_ary = load.values
@@ -21,8 +21,11 @@ module Server
         rank_ary.sort! do |a, b|
           b["score"] != a["score"] ? b["score"] <=> a["score"] : b["ratio"] <=> a["ratio"]
         end
-        ranking = {}
-        RANK_COUNT.times { |i| ranking[(i+1).to_s] = rank_ary[i] }
+        ranking = []
+        RANK_COUNT.times do |i|
+          rank_ary[i][:rank] = (i+1)
+          ranking.push rank_ary[i]
+        end
         save ranking
       ensure
         @mutex.unlock
@@ -35,7 +38,7 @@ module Server
       return File.open(RANK_FILE_PATH) { |json| JSON.load(json) }
     end
 
-    def save ranking
+    def save(ranking)
       File.open(RANK_FILE_PATH, "w") { |f| f.write(ranking.to_json) }
     end
 
